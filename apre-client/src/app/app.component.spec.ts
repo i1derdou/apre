@@ -1,9 +1,9 @@
-/**
- * Author: Professor Krasso
- * Date: 8/8/2024
- * File: app.component.spec.ts
- * Description: Test file for the app component
- */
+/*
+ * Author: David Clemens
+ * Date: 2024-01-18
+ * File: product-sales-by-region-tabular-components.spec.ts
+ * Desc: Tests product sales by region component
+*/
 
 // Import statements
 import { TestBed } from '@angular/core/testing';

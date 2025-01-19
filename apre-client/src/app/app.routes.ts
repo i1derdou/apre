@@ -25,6 +25,7 @@ import { CallDurationByDateRangeComponent } from './reports/agent-performance/ca
 import { ChannelRatingByMonthComponent } from './reports/customer-feedback/channel-rating-by-month/channel-rating-by-month.component';
 import { CustomerFeedbackComponent } from './reports/customer-feedback/customer-feedback.component';
 import { SalesByRegionTabularComponent } from './reports/sales/sales-by-region-tabular/sales-by-region-tabular.component';
+import { ProductSalesByRegionTabularComponent } from './reports/sales/product-sales-by-region-tabular/product-sales-by-region-tabular.component'
 
 // Export user-management routes
 export const userManagementRoutes: Routes = [
@@ -56,6 +57,10 @@ export const salesReportRoutes: Routes = [
   {
     path: 'sales-by-region-tabular',
     component: SalesByRegionTabularComponent
+  },
+  {
+    path: 'product-sales-by-region-tabular',
+    component: ProductSalesByRegionTabularComponent // dClemens 2024-01-18 Sprint 1 Major task
   }
 ];
 

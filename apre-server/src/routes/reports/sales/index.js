@@ -78,4 +78,46 @@ router.get('/regions/:region', (req, res, next) => {
   }
 });
 
+/**
+ * @description
+ *
+ * GET /regions/:region
+ *
+ * Fetches sales data for a specific region, grouped by salesperson.
+ *
+ * Example:
+ * fetch('/regions/north')
+ *  .then(response => response.json())
+ *  .then(data => console.log(data));
+ */
+router.get('/regions/products/:region', (req, res, next) => {
+  try {
+    mongo (async db => {
+      const productSalesReportByRegion = await db.collection('sales').aggregate([
+        { $match: { region: req.params.region } },
+        {
+          $group: {
+            _id: '$product',
+            totalSales: { $sum: '$amount'}
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            product: '$_id',
+            totalSales: 1
+          }
+        },
+        {
+          $sort: { product: 1 }
+        }
+      ]).toArray();
+      res.send(productSalesReportByRegion);
+    }, next);
+  } catch (err) {
+    console.error('Error getting product sales data for region: ', err);
+    next(err);
+  }
+});
+
 module.exports = router;
