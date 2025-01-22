@@ -32,7 +32,9 @@ import { ConfirmDialogComponent } from "../../../shared/confirm-dialog/confirm-d
               <td>{{ user.role }}</td>
               <td>
                 <a routerLink="/user-management/users/{{ user._id}}">
-                  <i class="fas fa-edit"></i>
+                  <i class="fas fa-edit tooltip">
+                    <span class="tooltiptext">Click to Edit</span> <!-- dClemens 2024-01-21 Added tooltip code to edit button -->
+                  </i>
                 </a> &nbsp;
                 <a (click)="confirmDelete(user._id)">
                   <i class="fas fa-trash"></i>
