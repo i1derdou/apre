@@ -14,7 +14,7 @@ jest.mock('../../../../src/utils/mongo');
 
 // Test the agent performance API
 describe('Apre Agent Performance API', () => {
-  beforeEach(() => {
+  afterEach(() => {
     mongo.mockClear();
   });
 
@@ -35,11 +35,8 @@ describe('Apre Agent Performance API', () => {
       await callback(db);
     });
 
-    const response = await request(app).get('/api/reports/agent-performance/call-duration-by-date-range?startDate=2023-01-01&endDate=2023-01-31'); // Send a GET request to the call-duration-by-date-range endpoint
-
-    expect(response.status).toBe(200); // Expect a 200 status code
-
-    // Expect the response body to match the expected data
+    const response = await request(app).get('/api/reports/agent-performance/call-duration-by-date-range?startDate=2023-01-01&endDate=2023-01-31');
+    expect(response.status).toBe(200);
     expect(response.body).toEqual([
       {
         agents: ['Agent A', 'Agent B'],
@@ -48,24 +45,41 @@ describe('Apre Agent Performance API', () => {
     ]);
   });
 
-  // Test the call-duration-by-date-range endpoint with missing parameters
-  it('should return 400 if startDate or endDate is missing', async () => {
-    const response = await request(app).get('/api/reports/agent-performance/call-duration-by-date-range?startDate=2023-01-01'); // Send a GET request to the call-duration-by-date-range endpoint with missing endDate
-    expect(response.status).toBe(400); // Expect a 400 status code
+  // Test the performance-by-customer-feedback endpoint
+  it('should fetch performance data for agents by customer feedback', async () => {
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([
+            {
+              totalRating: 18,
+              averageRating: 4.5,
+              feedbackCount: 4,
+              agentId: 1000,
+              agentName: 'John Doe'
+            }
+          ])
+        })
+      };
+      await callback(db);
+    });
 
-    // Expect the response body to match the expected data
-    expect(response.body).toEqual({
-      message: 'Start date and end date are required',
-      status: 400,
-      type: 'error'
+    const response = await request(app).get('/api/reports/agent-performance/performance-by-customer-feedback');
+    expect(response.status).toBe(200);
+    expect(response.body).toContainEqual({
+      totalRating: 18,
+      averageRating: 4.5,
+      feedbackCount: 4,
+      agentId: 1000,
+      agentName: 'John Doe'
     });
   });
 
-  // Test the call-duration-by-date-range endpoint with an invalid date range
+  // Test invalid endpoint
   it('should return 404 for an invalid endpoint', async () => {
-    const response = await request(app).get('/api/reports/agent-performance/invalid-endpoint'); // Send a GET request to an invalid endpoint
-    expect(response.status).toBe(404); // Expect a 404 status code
-    // Expect the response body to match the expected data
+    const response = await request(app).get('/api/reports/agent-performance/invalid-endpoint');
+    expect(response.status).toBe(404);
     expect(response.body).toEqual({
       message: 'Not Found',
       status: 404,

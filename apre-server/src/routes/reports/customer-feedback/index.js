@@ -92,4 +92,67 @@ router.get('/channel-rating-by-month', (req, res, next) => {
   }
 });
 
+/**
+ * @description
+ *
+ * GET /performance-by-customer-feedback
+ *
+ * Fetches performance data for agent by customer feedback.
+ *
+ * Example:
+ * fetch('/performance-by-customer-feedback')
+ *  .then(response => response.json())
+ *  .then(data => console.log(data));
+ */
+// Define the route
+router.get('/performance-by-customer-feedback', async (req, res, next) => {
+  try {
+    console.log('Fetching performance data by customer feedback');
+
+    // Connect to the MongoDB database and fetch data
+    await mongo(async (db) => {
+      const data = await db.collection('customerFeedback').aggregate([
+        {
+          $group: {
+            _id: "$agentId", // Group by agentId
+            totalRating: { $sum: "$rating" }, // Sum up the ratings
+            averageRating: { $avg: "$rating" }, // Calculate the average rating
+            feedbackCount: { $count: {} } // Count the number of feedbacks
+          }
+        },
+        {
+          $lookup: {
+            from: "agents", // Join with the agents collection
+            localField: "_id", // agentId in customerFeedback (grouped field)
+            foreignField: "agentId", // agentId in agents collection
+            as: "agentDetails" // Alias for the joined data
+          }
+        },
+        {
+          $unwind: "$agentDetails" // Unwind the agentDetails array to include agent information
+        },
+        {
+          $project: {
+            _id: 0, // Exclude the default _id field from the output
+            agentId: "$_id", // Rename _id to agentId
+            agentName: "$agentDetails.name", // Include agent name
+            totalRating: 1,
+            averageRating: 1,
+            feedbackCount: 1
+          }
+        },
+        {
+          $sort: { agentId: 1 } // Sort by agentId in ascending order
+        }
+      ]).toArray();
+
+      // Respond with the aggregated data
+      res.status(200).json(data);
+    });
+  } catch (err) {
+    console.error('Error in /performance-by-customer-feedback', err);
+    next(err);
+  }
+});
+
 module.exports = router;
