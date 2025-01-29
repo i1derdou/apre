@@ -4,11 +4,12 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../environments/environment';
+import { SuccessDialogComponent } from "../../../shared/success-dialog/success-dialog.component";
 
 @Component({
   selector: 'app-user-create',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, SuccessDialogComponent],
   template: `
     <div>
       <h1>User Create</h1>
@@ -47,11 +48,21 @@ import { environment } from '../../../../environments/environment';
       <br />
       <a class="link link--secondary" routerLink="/user-management/users">Return</a>
     </div>
+    @if (showSuccessDialog) {
+      <app-success-dialog
+        [header]="dialogHeader"
+        [message]="dialogMessage"
+        (confirmed)="onConfirm($event)">
+      </app-success-dialog>
+    }
   `,
   styles: ``
 })
 export class UserCreateComponent {
-  errorMessage: string;
+  errorMessage: string = '';
+  dialogHeader: string = '';
+  dialogMessage: string = '';
+  showSuccessDialog: boolean = false;
 
   newUserForm: FormGroup = this.fb.group({
     username: [null, Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(20)])],
@@ -60,9 +71,7 @@ export class UserCreateComponent {
     role: [null, Validators.required]
   });
 
-  constructor(private http: HttpClient, private router: Router, private fb: FormBuilder) {
-    this.errorMessage = '';
-  }
+  constructor(private http: HttpClient, private router: Router, private fb: FormBuilder) {}
 
   addUser() {
     if (!this.newUserForm.valid) {
@@ -79,17 +88,22 @@ export class UserCreateComponent {
 
     console.log('New User', newUser);
 
-    this.http.post(`${environment.apiBaseUrl}/users`, {
-      user: newUser
-    }).subscribe({
+    this.http.post(`${environment.apiBaseUrl}/users`, { user: newUser }).subscribe({
       next: (user) => {
+        this.dialogHeader = 'Congratulations!';
+        this.dialogMessage = 'New user created!';
+        this.showSuccessDialog = true;
         console.log('User created', user);
-        this.router.navigate(['/user-management/users']);
       },
       error: (error) => {
         console.error('Error creating user', error);
         this.errorMessage = error.message;
       }
     });
+  }
+
+  onConfirm(result: boolean) {
+    this.showSuccessDialog = false;
+    this.router.navigate(['/user-management/users']);
   }
 }
