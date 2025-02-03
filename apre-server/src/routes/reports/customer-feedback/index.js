@@ -155,4 +155,65 @@ router.get('/performance-by-customer-feedback', async (req, res, next) => {
   }
 });
 
+
+/**
+ * @description
+ *
+ * GET /customer-feedback-by-product
+ *
+ * Fetches customer feedback by product.
+ *
+ * Example:
+ * fetch('/customer-feedback-by-product')
+ *  .then(response => response.json())
+ *  .then(data => console.log(data));
+ */
+// Define the route
+router.get('/customer-feedback-by-product', async (req, res, next) => {
+  try {
+    console.log('Fetching customer feedback by product');
+
+    // Connect to the MongoDB database and fetch data
+    await mongo(async (db) => {
+      const data = await db.collection("customerFeedback").aggregate([
+        {
+          $group: {
+            _id: "$product",
+            averageRating: { $avg: "$rating" },
+            totalFeedback: { $sum: 1 },
+            positiveFeedback: {
+              $sum: { $cond: [{ $eq: ["$feedbackSentiment", "Positive"] }, 1, 0] }
+            },
+            neutralFeedback: {
+              $sum: { $cond: [{ $eq: ["$feedbackSentiment", "Neutral"] }, 1, 0] }
+            },
+            negativeFeedback: {
+              $sum: { $cond: [{ $eq: ["$feedbackSentiment", "Negative"] }, 1, 0] }
+            },
+            feedbackDetails: {
+              $push: {
+                customer: "$customer",
+                rating: "$rating",
+                feedbackText: "$feedbackText",
+                feedbackType: "$feedbackType",
+                feedbackSource: "$feedbackSource",
+                date: "$date"
+              }
+            }
+          }
+        },
+        {
+          $sort: { averageRating: -1 }
+        }
+      ]).toArray();
+
+      // Respond with the aggregated data
+      res.status(200).json(data);
+    });
+  } catch (err) {
+    console.error('Error in /customer-feedback-by-product', err);
+    next(err);
+  }
+});
+
 module.exports = router;

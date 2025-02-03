@@ -27,6 +27,7 @@ import { CustomerFeedbackComponent } from './reports/customer-feedback/customer-
 import { PerformanceByCustomerFeedbackComponent } from './reports/customer-feedback/performance-by-customer-feedback/performance-by-customer-feedback.component';
 import { SalesByRegionTabularComponent } from './reports/sales/sales-by-region-tabular/sales-by-region-tabular.component';
 import { ProductSalesByRegionTabularComponent } from './reports/sales/product-sales-by-region-tabular/product-sales-by-region-tabular.component'
+import { CustomerFeedbackByProductComponent } from './reports/customer-feedback/customer-feedback-by-product/customer-feedback-by-product.component';
 
 // Export user-management routes
 export const userManagementRoutes: Routes = [
@@ -81,7 +82,11 @@ export const customerFeedbackRoutes: Routes = [
   },
   {
     path: 'performance-by-customer-feedback',
-    component: PerformanceByCustomerFeedbackComponent
+    component: PerformanceByCustomerFeedbackComponent // dClemens 2024-01-18 Sprint 2 Major task
+  },
+  {
+    path: 'customer-feedback-by-product',
+    component: CustomerFeedbackByProductComponent // dClemens 2024-02-01 Sprint 3 Major task
   }
 ];
 

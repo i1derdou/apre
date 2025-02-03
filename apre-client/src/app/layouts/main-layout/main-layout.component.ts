@@ -318,7 +318,8 @@ export class MainLayoutComponent {
 
   customerFeedbackReports = [
     { name: 'Channel Rating by Month', url: '/reports/customer-feedback/channel-rating-by-month' },
-    { name: 'Performance By Feedback', url: '/reports/customer-feedback/performance-by-customer-feedback' }
+    { name: 'Performance By Feedback', url: '/reports/customer-feedback/performance-by-customer-feedback' },
+    { name: 'Feedback By Product', url: '/reports/customer-feedback/customer-feedback-by-product' }
     // Add more reports as needed
   ];
 

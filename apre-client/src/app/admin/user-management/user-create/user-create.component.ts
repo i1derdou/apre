@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../environments/environment';
-import { SuccessDialogComponent } from "../../../shared/success-dialog/success-dialog.component";
+import { SuccessDialogComponent } from "../../../shared/success-dialog/success-dialog.component"; // Import the success dialog component
 
 @Component({
   selector: 'app-user-create',
@@ -90,9 +90,9 @@ export class UserCreateComponent {
 
     this.http.post(`${environment.apiBaseUrl}/users`, { user: newUser }).subscribe({
       next: (user) => {
-        this.dialogHeader = 'Congratulations!';
-        this.dialogMessage = 'New user created!';
-        this.showSuccessDialog = true;
+        this.dialogHeader = 'Congratulations!'; // Set dialog header text
+        this.dialogMessage = 'New user created!'; // Set dialog message text
+        this.showSuccessDialog = true; // Open the success dialog
         console.log('User created', user);
       },
       error: (error) => {
@@ -103,7 +103,7 @@ export class UserCreateComponent {
   }
 
   onConfirm(result: boolean) {
-    this.showSuccessDialog = false;
-    this.router.navigate(['/user-management/users']);
+    this.showSuccessDialog = false; // Close the success dialog
+    this.router.navigate(['/user-management/users']); // Forward the user back to the main user's page
   }
 }
